@@ -51,6 +51,8 @@ class FindPane(QtWidgets.QWidget):
         layout.addWidget(self.scope)
         layout.addSpacing(6)
         self.replacement = QtWidgets.QLineEdit(self)
+        self.query.installEventFilter(self)
+        self.replacement.installEventFilter(self)
         self.replacement.setPlaceholderText(tr('Replace with…'))
         layout.addWidget(self.replacement)
         row = QtWidgets.QHBoxLayout()
@@ -77,6 +79,25 @@ class FindPane(QtWidgets.QWidget):
             shortcut(self, 'Shift+Return', lambda: self.find(True)),
         ]
         self.query_changed()
+
+    def eventFilter(self, watched, event):
+        kind = event.type()
+        if watched in (self.query, self.replacement) and kind in (
+            QtCore.QEvent.ShortcutOverride, QtCore.QEvent.KeyPress
+        ):
+            close = event.key() == QtCore.Qt.Key_Escape and event.modifiers() == QtCore.Qt.NoModifier
+            replace = event.key() == QtCore.Qt.Key_H and event.modifiers() == QtCore.Qt.ControlModifier
+            if close or replace:
+                # Handle search shortcuts before QLineEdit and FreeCAD consume them.
+                event.accept()
+                if kind == QtCore.QEvent.KeyPress:
+                    if close:
+                        self.dismiss()
+                    elif self.query.text():
+                        self.replacement.setFocus()
+                        self.replacement.selectAll()
+                return True
+        return super().eventFilter(watched, event)
 
     def query_changed(self):
         self.message.clear()
