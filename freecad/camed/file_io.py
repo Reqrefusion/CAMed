@@ -1,9 +1,12 @@
 """Plain G-code file handling through FreeCAD's import/export interface."""
 
 from .i18n import tr
+from . import nc_document
 from .transactions import document_transaction
 from pathlib import Path
+import codecs
 import os
+import re
 import tempfile
 import FreeCAD as App
 from .editor_lifecycle import close_editor as _close_editor, require_idle
@@ -13,21 +16,25 @@ EXTENSIONS = (".nc", ".ngc", ".tap", ".gcode")
 FILTER = "G-code (*.nc *.ngc *.tap *.gcode)"
 
 
+def _decode_source(raw):
+    for bom, encoding in (
+        (codecs.BOM_UTF8, "utf-8"),
+        (codecs.BOM_UTF16_LE, "utf-16-le"),
+        (codecs.BOM_UTF16_BE, "utf-16-be"),
+    ):
+        if raw.startswith(bom):
+            return raw[len(bom):].decode(encoding), encoding, bom
+    # Turkish Windows NC files are often saved as ANSI rather than UTF-8.
+    for encoding in ("utf-8", "cp1254", "cp1252"):
+        try:
+            return raw.decode(encoding), encoding, b""
+        except UnicodeDecodeError:
+            pass
+    raise ValueError(tr('Cannot read the file encoding. Save the file as UTF-8.'))
+
+
 def read_source(filename):
-    raw = Path(filename).read_bytes()
-    if raw.startswith((b"\xff\xfe", b"\xfe\xff")):
-        return raw.decode("utf-16")
-    try:
-        return raw.decode("utf-8-sig")
-    except UnicodeDecodeError:
-        # Turkish Windows NC files are often saved as ANSI rather than UTF-8.
-        # Decode strictly; never replace undecodable bytes silently.
-        for encoding in ("cp1254", "cp1252"):
-            try:
-                return raw.decode(encoding)
-            except UnicodeDecodeError:
-                pass
-        raise ValueError(tr('Cannot read the file encoding. Save the file as UTF-8.'))
+    return _decode_source(Path(filename).read_bytes())[0]
 
 
 def show_open_error(error):
@@ -39,22 +46,40 @@ def show_open_error(error):
     error.cameditor_reported = True
 
 
-def write_source(filename, source):
-    """Replace only after the complete UTF-8 file has been written successfully."""
+def write_source(filename, source, *, preserve_format=False):
+    """Encode before writing, then replace the destination in one operation."""
     path = Path(filename)
-    if path.suffix.lower() not in EXTENSIONS:
+    resolved = path.resolve()
+    if path.suffix.lower() not in EXTENSIONS or resolved.suffix.lower() not in EXTENSIONS:
         raise ValueError(tr('Use a .nc, .ngc, .tap or .gcode file extension.'))
-    descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    encoding, bom, newline = "utf-8", b"", "\n"
+    if preserve_format:
+        try:
+            original = resolved.read_bytes()
+        except FileNotFoundError:
+            pass
+        else:
+            text, encoding, bom = _decode_source(original)
+            line_break = re.search(r"\r\n|\n|\r", text)
+            if line_break is not None:
+                newline = line_break.group()
+    normalized = source.replace("\r\n", "\n").replace("\r", "\n")
     try:
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
-            stream.write(source)
+        data = bom + normalized.replace("\n", newline).encode(encoding)
+    except UnicodeEncodeError as error:
+        raise ValueError(tr('Some characters cannot be saved in the original encoding. Use Save As to save a UTF-8 copy.')) from error
+
+    descriptor, temporary = tempfile.mkstemp(prefix=".camed-", suffix=".tmp", dir=resolved.parent)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(data)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, path)
+        os.replace(temporary, resolved)
     finally:
         if os.path.exists(temporary):
             os.unlink(temporary)
-    return str(path.resolve())
+    return str(resolved)
 
 
 def _editing_panel(operation):
@@ -77,11 +102,21 @@ def source_for(operation):
 
 
 def save_operation(operation, filename):
-    path = write_source(filename, source_for(operation))
-    bind_path(operation, path)
+    previous = getattr(operation, "CAMEditorGCodePath", "")
+    same_destination = bool(previous) and Path(previous).resolve() == Path(filename).resolve()
+    path = write_source(filename, source_for(operation), preserve_format=same_destination)
+    document = getattr(operation, "Document", None)
+    state = nc_document.state_for(document)
+    with nc_document.internal_update(document):
+        bind_path(operation, path)
+        if state is not None and previous and not same_destination and document.Label == Path(previous).name:
+            document.Label = Path(path).name
     owner = _editing_panel(operation)
     if owner is not None:
         owner.editor.document().setModified(False)
+        owner.update_info()
+    if state is not None:
+        state.set_source_modified(False)
     return path
 
 
@@ -153,7 +188,13 @@ def _open(filename):
     require_idle()
     _close_editor()
     with new_document() as doc:
-        return _load(filename, doc, source, rename_document=True)
+        _load(filename, doc, source, rename_document=True)
+        nc_document.track(doc)
+        owner = _editing_panel(active_operation())
+        if owner is not None:
+            owner.editor.document().setModified(False)
+            owner.update_info()
+        return doc
 
 
 def open(filename):
@@ -242,13 +283,15 @@ def save_active(save_as=False):
         raise ValueError(tr('Open the CAMed program to save.'))
     filename = getattr(operation, "CAMEditorGCodePath", "")
     if save_as or not filename:
-        filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-            Gui.getMainWindow(), tr('Save G-code as'), filename or "program.nc", FILTER
-        )
-        if not filename:
+        dialog = QtWidgets.QFileDialog(Gui.getMainWindow(), tr('Save G-code as'), "", FILTER)
+        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
+        dialog.setDefaultSuffix("nc")
+        dialog.selectFile(filename or "program.nc")
+        if not (getattr(dialog, "exec", None) or dialog.exec_)():
             return False
-        if not Path(filename).suffix:
-            filename += ".nc"
+        filename = dialog.selectedFiles()[0]
+        if active_operation() is not operation:
+            raise ValueError(tr('Activate the CAMed document.'))
     path = save_operation(operation, filename)
     owner = _editing_panel(operation)
     if owner is not None and owner.is_current():

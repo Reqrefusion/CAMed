@@ -57,9 +57,36 @@ class FileIOTests(unittest.TestCase):
             operation=self.operation,
             shutting_down=False,
             editor=Mock(toPlainText=Mock(return_value="G1 X25 F100")),
+            update_info=Mock(),
         )
         self.io.save_operation(self.operation, str(self.target))
         self.assertEqual(self.target.read_text(), "G1 X25 F100")
+
+    def test_nc_save_clears_source_dirty_but_preserves_project_dirty(self):
+        doc = self.operation.Document = types.SimpleNamespace(Name='NC', FileName='', Label=self.target.name)
+        gui_doc = types.SimpleNamespace(Modified=True)
+        gui = types.ModuleType('FreeCADGui')
+        gui.getDocument = Mock(return_value=gui_doc)
+        tracker = self.io.nc_document
+        with (
+            patch.dict(sys.modules, {'FreeCADGui': gui, 'FreeCAD': self.app}),
+            patch.object(tracker, '_observer', None),
+            patch.object(self.app, 'addDocumentObserver', create=True),
+        ):
+            state = tracker.track(doc)
+            self.assertFalse(gui_doc.Modified)
+            state.set_source_modified(True)
+            self.assertTrue(gui_doc.Modified)
+            self.io.save_operation(self.operation, str(self.target))
+            self.assertFalse(gui_doc.Modified)
+            with tracker.internal_update(doc):
+                tracker._observer.slotChangedObject(self.operation, 'Gcode')
+                gui_doc.Modified = True
+            self.assertFalse(gui_doc.Modified)
+
+            tracker._observer.slotCreatedObject(types.SimpleNamespace(Document=doc))
+            self.io.save_operation(self.operation, str(self.target))
+            self.assertTrue(gui_doc.Modified)
 
     def test_empty_source_does_not_restore_old_commands(self):
         self.operation.LiveEditorSource = ""
@@ -119,32 +146,68 @@ class FileIOTests(unittest.TestCase):
                 self.io.export(selected, str(self.target))
             self.assertEqual(self.target.read_text(), 'previous')
 
-    def test_save_cancel_does_not_write_or_bind(self):
+    def save_with_dialog(self, selected, *, accept=True, save_as=False):
         self.app.ActiveDocument = types.SimpleNamespace(Objects=[self.operation])
+        dialog = Mock()
+        dialog.exec.return_value = int(accept)
+        dialog.selectedFiles.return_value = [str(selected)]
         qt = types.ModuleType("PySide")
-        qt.QtWidgets = types.SimpleNamespace(
-            QFileDialog=types.SimpleNamespace(getSaveFileName=Mock(return_value=("", "")))
-        )
+        qt.QtWidgets = types.SimpleNamespace(QFileDialog=Mock(return_value=dialog))
         gui = types.ModuleType("FreeCADGui")
         gui.getMainWindow = Mock()
         with patch.dict(sys.modules, {"PySide": qt, "FreeCADGui": gui}):
-            self.assertFalse(self.io.save_active())
+            saved = self.io.save_active(save_as=save_as)
+        dialog.setDefaultSuffix.assert_called_once_with("nc")
+        return saved
+
+    def test_save_cancel_does_not_write_or_bind(self):
+        self.assertFalse(self.save_with_dialog(self.target, accept=False))
         self.assertFalse(hasattr(self.operation, "CAMEditorGCodePath"))
         self.assertFalse(self.target.exists())
 
-    def test_default_extension_is_nc(self):
-        self.app.ActiveDocument = types.SimpleNamespace(Objects=[self.operation])
+    def test_save_as_changes_the_destination_for_later_saves(self):
+        original = self.target
+        original.write_bytes("(Çelik)\r\nG1 X1\r\n".encode("cp1254"))
+        self.operation.CAMEditorGCodePath = str(original)
+        renamed = original.with_name("copy.NC")
+        self.operation.LiveEditorSource = "(Çelik)\nG1 X2\n"
+        self.assertTrue(self.save_with_dialog(renamed, save_as=True))
+        self.assertEqual(renamed.read_bytes(), "(Çelik)\nG1 X2\n".encode("utf-8"))
+        self.assertEqual(self.operation.CAMEditorGCodePath, str(renamed.resolve()))
+        self.operation.LiveEditorSource = "G1 X3\n"
         qt = types.ModuleType("PySide")
-        qt.QtWidgets = types.SimpleNamespace(
-            QFileDialog=types.SimpleNamespace(
-                getSaveFileName=Mock(return_value=(str(self.target.with_suffix('')), ""))
-            )
-        )
-        gui = types.ModuleType("FreeCADGui")
-        gui.getMainWindow = Mock()
-        with patch.dict(sys.modules, {"PySide": qt, "FreeCADGui": gui}):
+        qt.QtWidgets = types.SimpleNamespace()
+        with patch.dict(sys.modules, {"PySide": qt, "FreeCADGui": types.ModuleType("FreeCADGui")}):
             self.assertTrue(self.io.save_active())
-        self.assertTrue(self.target.exists())
+        self.assertEqual(renamed.read_bytes(), b"G1 X3\n")
+        self.assertEqual(original.read_bytes(), "(Çelik)\r\nG1 X1\r\n".encode("cp1254"))
+
+    def test_save_preserves_original_encoding_bom_and_line_endings(self):
+        import codecs
+
+        for encoding, bom, newline in (
+            ("cp1254", b"", "\r\n"),
+            ("utf-8", codecs.BOM_UTF8, "\n"),
+            ("utf-16-be", codecs.BOM_UTF16_BE, "\r"),
+        ):
+            with self.subTest(encoding=encoding):
+                self.target.write_bytes(bom + newline.join(("(Çelik)", "G1 X1", "")).encode(encoding))
+                self.operation.CAMEditorGCodePath = str(self.target)
+                self.operation.LiveEditorSource = "(Çelik)\nG1 X2\n"
+                self.io.save_operation(self.operation, self.target)
+                self.assertEqual(
+                    self.target.read_bytes(), bom + newline.join(("(Çelik)", "G1 X2", "")).encode(encoding)
+                )
+
+    def test_save_with_incompatible_encoding_leaves_original_intact(self):
+        original = "(Çelik)\r\nG1 X1\r\n".encode("cp1254")
+        self.target.write_bytes(original)
+        self.operation.CAMEditorGCodePath = str(self.target)
+        self.operation.LiveEditorSource = "(工程)\nG1 X2\n"
+        with self.assertRaisesRegex(ValueError, "Save As"):
+            self.io.save_operation(self.operation, self.target)
+        self.assertEqual(self.target.read_bytes(), original)
+        self.assertEqual(list(self.target.parent.iterdir()), [self.target])
 
     def test_turkish_ansi_nc_file_is_decoded(self):
         source = "%1049\n(YÜZEY TIRAŞLAMA)\nG0X1\n"

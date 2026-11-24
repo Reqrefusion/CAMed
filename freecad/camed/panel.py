@@ -1,6 +1,7 @@
 """Reuse CAM's editor, native Path renderer and OpenGL CAM simulator."""
 
 from .i18n import tr
+from . import nc_document
 import FreeCAD as App
 from contextlib import contextmanager
 import FreeCADGui as Gui
@@ -213,7 +214,7 @@ class LivePanel(QtWidgets.QDockWidget):
             info.set_progress(label=tr('Document inactive'))
         elif pending:
             info.set_progress(label=tr('Updating…'))
-        elif getattr(self, "preview_failed", False):
+        elif getattr(self, "preview_failed", False) or (self.simulation is not None and not self.valid):
             info.set_progress(label=tr('Stopped'))
         elif self.simulation is None or self.simulation.closed:
             info.set_progress(label=tr('Ready'))
@@ -240,7 +241,8 @@ class LivePanel(QtWidgets.QDockWidget):
         previous = getattr(self, "applying_program", False)
         self.applying_program = True
         try:
-            persist_source(self.operation, self.editor.toPlainText())
+            with nc_document.internal_update(self.document):
+                persist_source(self.operation, self.editor.toPlainText())
         finally:
             self.applying_program = previous
 
@@ -251,6 +253,9 @@ class LivePanel(QtWidgets.QDockWidget):
     def text_changed(self):
         if self.shutting_down:
             return
+        state = nc_document.state_for(self.document)
+        if state is not None:
+            state.set_source_modified(True)
         self.valid = False
         if self.simulation:
             self.simulation.pause()
@@ -285,54 +290,55 @@ class LivePanel(QtWidgets.QDockWidget):
             return
         self.applying_program = True
         self.preview_failed = False
-        try:
-            source = self.editor.toPlainText()
-            # Source survives parser, controller and native recompute failures.
-            persist_source(self.operation, source)
-            job = getattr(self, "job", None)
-            result, initial = parse_program(self.operation, job, source)
-            self.preview_result = result
-            self.preview_error = result.error
-            op = self.operation
-            apply_preview(op, job, result, initial)
-            navigation = getattr(self, 'path_selection', None)
-            if navigation is not None:
-                navigation.refresh(source, result)
-            op.Visibility = result.has_motion
-            self.valid = result.has_motion
-            if result.error:
-                self.status.setText(
-                    tr('{value1}\nOnly motions before this error are shown.').format(value1=result.error)
-                )
-            else:
-                self.status.setText(tr('Toolpath updated.') if source.strip() else tr('Ready'))
-            if self.simulation:
-                if result.can_simulate:
-                    self.simulation.reload(autoplay=False)
+        with nc_document.internal_update(self.document):
+            try:
+                source = self.editor.toPlainText()
+                # Source survives parser, controller and native recompute failures.
+                persist_source(self.operation, source)
+                job = getattr(self, "job", None)
+                result, initial = parse_program(self.operation, job, source)
+                self.preview_result = result
+                self.preview_error = result.error
+                op = self.operation
+                apply_preview(op, job, result, initial)
+                navigation = getattr(self, 'path_selection', None)
+                if navigation is not None:
+                    navigation.refresh(source, result)
+                op.Visibility = result.has_motion
+                self.valid = result.has_motion
+                if result.error:
+                    self.status.setText(
+                        tr('{value1}\nOnly motions before this error are shown.').format(value1=result.error)
+                    )
                 else:
-                    self.simulation.cancel()
-                    self.simulation = None
-            self.remember_scene()
-            if getattr(self, "ui_ready", False) and self.simulation is None:
-                self.ensure_simulation()
-        except Exception as error:
-            if not self.owns_operation():
-                self.retire()
-                return
-            self.preview_failed = True
-            self.valid = False
-            self.operation.Visibility = False
-            if getattr(self, "job", None) is not None:
-                from .tool_backend import operations
+                    self.status.setText(tr('Toolpath updated.') if source.strip() else tr('Ready'))
+                if self.simulation:
+                    if result.can_simulate:
+                        self.simulation.reload(autoplay=False, preserve_camera=True)
+                    else:
+                        self.simulation.pause()
+                        self.sim_controls(False)
+                self.remember_scene()
+                if getattr(self, "ui_ready", False) and self.simulation is None:
+                    self.ensure_simulation()
+            except Exception as error:
+                if not self.owns_operation():
+                    self.retire()
+                    return
+                self.preview_failed = True
+                self.valid = False
+                self.operation.Visibility = False
+                if getattr(self, "job", None) is not None:
+                    from .tool_backend import operations
 
-                for item in operations(self.operation, self.job):
-                    item.Visibility = False
-            self.sim_controls(False)
-            self.status.setText(tr('Preview stopped: {error}').format(error=error))
-            self.remember_scene()
-        finally:
-            self.applying_program = False
-            self.update_info()
+                    for item in operations(self.operation, self.job):
+                        item.Visibility = False
+                self.sim_controls(False)
+                self.status.setText(tr('Preview stopped: {error}').format(error=error))
+                self.remember_scene()
+            finally:
+                self.applying_program = False
+                self.update_info()
 
     def apply_stock(self, definition, *, transaction=True):
         if not self.is_current():
@@ -402,7 +408,7 @@ class LivePanel(QtWidgets.QDockWidget):
         sim = GLSession(self)
         try:
             self.simulation = sim
-            sim.open(preserve_camera=preserve_camera)
+            sim.open(focus=focus, preserve_camera=preserve_camera)
             self.remember_scene()
         except Exception as error:
             sim.cancel()
@@ -573,7 +579,8 @@ class LivePanel(QtWidgets.QDockWidget):
 
         editor_documents.stop(self)
         if self.is_current():
-            self.operation.Visibility = self.previous_visibility
+            with nc_document.internal_update(self.document):
+                self.operation.Visibility = self.previous_visibility
         super().closeEvent(event)
 
 

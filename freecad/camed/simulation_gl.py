@@ -70,7 +70,7 @@ class GLSession:
         self.requested_step = None
         self.rebuilding = False
 
-    def open(self, *, preserve_camera=False):
+    def open(self, *, focus=True, preserve_camera=False):
         try:
             from Path.Main.Gui.SimulatorGL import CAMSimulation
         except ImportError as error:
@@ -83,7 +83,7 @@ class GLSession:
         self.native.quality = getattr(self.owner, "simulation_quality", 10)
         # Reuse CAM's profile converter and GL engine, without its modal task
         # panel. Stock/tools remain available while the GL view stays open.
-        self.reload(preserve_view=preserve_camera, preserve_camera=preserve_camera)
+        self.reload(preserve_view=not focus, preserve_camera=preserve_camera)
 
     def focus(self):
         if self.display is None:
@@ -144,7 +144,7 @@ class GLSession:
         QtCore.QTimer.singleShot(0, lambda: self._frame_rendered(token))
 
     def _frame_rendered(self, token):
-        if not self.closed and token == self.generation and self.owner.is_current():
+        if self.display is not None and not self.closed and token == self.generation and self.owner.is_current():
             self.frame_ready = True
             self.display.stockVisibleChanged.emit(True)
             if getattr(self.owner.job, "CAMEditorSession", False):
@@ -174,6 +174,7 @@ class GLSession:
     def seek_line(self, source_line):
         if (
             self.closed
+            or not self.enabled
             or not self.owner.is_current()
             or self.rebuilding
             or getattr(self.owner, "resource_depth", 0)
@@ -287,6 +288,7 @@ class GLSession:
             return
         area = Gui.getMainWindow().findChild(QtWidgets.QMdiArea)
         previous_view = area.activeSubWindow() if area is not None and preserve_view else None
+        previous_focus = QtWidgets.QApplication.focusWidget() if preserve_view else None
         self.rebuilding = True
         try:
             self._rebuild(autoplay, allow_partial, preserve_progress, preserve_camera)
@@ -294,18 +296,22 @@ class GLSession:
             self.rebuilding = False
             # Native Reset/BeginSimulation can activate their MDI view.
             # Even a failed live rebuild must preserve the user's tab.
-            if previous_view is not None and self.owner.is_current():
+            if preserve_view and self.owner.is_current():
                 try:
-                    area.setActiveSubWindow(previous_view)
+                    if previous_view is not None and area.activeSubWindow() is not previous_view:
+                        area.setActiveSubWindow(previous_view)
+                    if previous_focus is not None and previous_focus.isVisible() and previous_focus.isEnabled():
+                        previous_focus.setFocus()
                 except RuntimeError:
-                    pass  # The previous Qt window may have been closed.
+                    pass  # The previous Qt window or widget may have been closed.
 
     def _rebuild(self, autoplay, allow_partial, preserve_progress, preserve_camera):
         if self.closed or not self.owner.is_current():
             return
         result = self.owner.preview_result
         if not result.can_simulate:
-            self.cancel()
+            self.pause()
+            self.set_enabled(False)
             return
         from .simulation_input import prepare
 

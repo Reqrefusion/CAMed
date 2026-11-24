@@ -35,7 +35,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation> · Durdu</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="186" />
+      <location filename="../../file_io.py" line="227" />
       <source>;;FreeCAD project (*.FCStd *.fcstd);;All files (*)</source>
       <translation>;;FreeCAD projesi (*.FCStd *.fcstd);;Tüm dosyalar (*)</translation>
     </message>
@@ -50,8 +50,9 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Mutlak koordinatlar</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="339" />
-      <location filename="../../panel.py" line="350" />
+      <location filename="../../file_io.py" line="294" />
+      <location filename="../../panel.py" line="345" />
+      <location filename="../../panel.py" line="356" />
       <location filename="../../stock_backend.py" line="102" />
       <location filename="../../stock_backend.py" line="164" />
       <source>Activate the CAMed document.</source>
@@ -73,7 +74,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Takım ayarları için programın belgesini etkinleştirin.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="284" />
+      <location filename="../../panel.py" line="289" />
       <source>Activate the program document. The program may have been deleted.</source>
       <translation>Programın bulunduğu belgeyi etkinleştirin. Program silinmiş olabilir.</translation>
     </message>
@@ -163,7 +164,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Kutu</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="37" />
+      <location filename="../../file_io.py" line="44" />
       <source>CAMed could not open G-code: {error}
 </source>
       <translation>CAMed G-code açılamadı: {error}
@@ -177,7 +178,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
 </translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="126" />
+      <location filename="../../file_io.py" line="161" />
       <source>CAMed opened G-code: {filename}
 </source>
       <translation>CAMed G-code açıldı: {filename}
@@ -231,12 +232,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Program sonundan sonra çevrim eklenemez.</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="30" />
+      <location filename="../../file_io.py" line="33" />
       <source>Cannot read the file encoding. Save the file as UTF-8.</source>
       <translation>G-code metin kodlaması okunamadı; dosyayı UTF-8 olarak kaydedin.</translation>
     </message>
     <message>
-      <location filename="../../program_documents.py" line="18" />
+      <location filename="../../program_documents.py" line="21" />
       <source>Cannot reinitialize an existing program. Create a new program.</source>
       <translation>Mevcut programın kaynağı yeniden başlatılamaz; yeni program oluşturun.</translation>
     </message>
@@ -301,7 +302,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Aramayı kapat (Escape)</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="415" />
+      <location filename="../../panel.py" line="421" />
       <source>Close the tool editor first.</source>
       <translation>Önce takım düzenleme penceresini kapatın.</translation>
     </message>
@@ -366,12 +367,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Stok uygulanamadı: {error}</translation>
     </message>
     <message>
-      <location filename="../../program_documents.py" line="70" />
+      <location filename="../../program_documents.py" line="73" />
       <source>Could not clean up the new document: {cleanup_error}</source>
       <translation>Yeni belge temizlenemedi: {cleanup_error}</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="104" />
+      <location filename="../../file_io.py" line="139" />
       <source>Could not create a program for the G-code file.</source>
       <translation>G-code için yeni program oluşturulamadı.</translation>
     </message>
@@ -396,7 +397,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>FreeCAD delme üreticisi yüklenemedi.</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="38" />
+      <location filename="../../file_io.py" line="45" />
       <source>Could not open G-code</source>
       <translation>G-code açılamadı</translation>
     </message>
@@ -406,12 +407,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>İlerleme ve devir ayarları açılamadı</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="411" />
+      <location filename="../../panel.py" line="417" />
       <source>Could not open the simulation: {error}</source>
       <translation>Simülasyon açılamadı: {error}</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="567" />
+      <location filename="../../panel.py" line="573" />
       <source>Could not preserve the program text: {error}</source>
       <translation>Program metni korunamadı: {error}</translation>
     </message>
@@ -426,7 +427,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Eski stok geri yüklenemedi: {error}</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="523" />
+      <location filename="../../panel.py" line="529" />
       <source>Could not update the simulation: {error}</source>
       <translation>Simülasyon güncellenemedi: {error}</translation>
     </message>
@@ -509,7 +510,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>R ve I/J aynı yayda kullanılamaz.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="213" />
+      <location filename="../../panel.py" line="214" />
       <source>Document inactive</source>
       <translation>Belge etkin değil</translation>
     </message>
@@ -703,7 +704,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Stok/takım değişikliği tamamlanmadan simülasyon güncellenemez.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="561" />
+      <location filename="../../panel.py" line="567" />
       <source>Finish or cancel the current CAM task. Your code is retained.</source>
       <translation>Önce açık CAM görevini tamamlayın veya iptal edin. Yazdığınız kod korunur.</translation>
     </message>
@@ -714,7 +715,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Önce açık CAM görevini tamamlayın veya iptal edin.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="594" />
+      <location filename="../../panel.py" line="601" />
       <source>Finish or cancel the open task, then try again.</source>
       <translation>Açık görevi tamamlayın veya iptal edin, ardından yeniden deneyin.</translation>
     </message>
@@ -774,17 +775,17 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>G-code editörü</translation>
     </message>
     <message>
-      <location filename="../../init_gui.py" line="185" />
+      <location filename="../../init_gui.py" line="205" />
       <source>G-code editor, stock setup and simulation</source>
       <translation>G-code editörü, stok tanımı ve canlı simülasyon</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="124" />
+      <location filename="../../file_io.py" line="159" />
       <source>G-code imported</source>
       <translation>G-code içe aktarıldı</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="255" />
+      <location filename="../../file_io.py" line="298" />
       <source>G-code saved: {path}</source>
       <translation>G-code kaydedildi: {path}</translation>
     </message>
@@ -885,12 +886,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Delik konumları</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="101" />
+      <location filename="../../file_io.py" line="136" />
       <source>Import CAMed G-code</source>
       <translation>CAMed G-code içe aktar</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="120" />
+      <location filename="../../file_io.py" line="155" />
       <source>Imported {filename} into {document}. The editor view could not be opened or updated.</source>
       <translation>{filename} dosyası {document} belgesine aktarıldı. Editör görünümü açılamadı veya güncellenemedi.</translation>
     </message>
@@ -987,7 +988,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
     </message>
     <message>
       <location filename="../../editor_actions.py" line="26" />
-      <location filename="../../panel.py" line="96" />
+      <location filename="../../panel.py" line="97" />
       <source>Line numbers</source>
       <translation>Satır numaraları</translation>
     </message>
@@ -1168,12 +1169,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Tamam</translation>
     </message>
     <message>
-      <location filename="../../file_actions.py" line="65" />
+      <location filename="../../file_actions.py" line="66" />
       <source>Open a G-code or FreeCAD file</source>
       <translation>G-code veya FreeCAD dosyası aç</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="184" />
+      <location filename="../../file_io.py" line="225" />
       <source>Open file</source>
       <translation>Dosya aç</translation>
     </message>
@@ -1183,7 +1184,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Simülasyon görünümünü aç veya öne getir</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="242" />
+      <location filename="../../file_io.py" line="283" />
       <source>Open the CAMed program to save.</source>
       <translation>Kaydedilecek CAMed programını açın.</translation>
     </message>
@@ -1203,7 +1204,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Açıldı</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="146" />
+      <location filename="../../file_io.py" line="181" />
       <source>Opened: {value1}
 </source>
       <translation>Açıldı: {value1}
@@ -1240,12 +1241,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Konum</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="221" />
+      <location filename="../../panel.py" line="222" />
       <source>Preparing…</source>
       <translation>Hazırlanıyor…</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="331" />
+      <location filename="../../panel.py" line="337" />
       <source>Preview stopped: {error}</source>
       <translation>Önizleme durduruldu: {error}</translation>
     </message>
@@ -1302,8 +1303,8 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <location filename="../../info_panel.py" line="31" />
       <location filename="../../info_panel.py" line="114" />
       <location filename="../../info_panel.py" line="112" />
-      <location filename="../../panel.py" line="308" />
-      <location filename="../../panel.py" line="219" />
+      <location filename="../../panel.py" line="314" />
+      <location filename="../../panel.py" line="220" />
       <source>Ready</source>
       <translation>Hazır</translation>
     </message>
@@ -1403,23 +1404,25 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Çevrim başlangıç Z düzlemine dön</translation>
     </message>
     <message>
-      <location filename="../../init_gui.py" line="158" />
+      <location filename="../../init_gui.py" line="177" />
       <source>Save FreeCAD project…</source>
       <translation>FreeCAD projesini kaydet…</translation>
     </message>
     <message>
-      <location filename="../../file_actions.py" line="66" />
+      <location filename="../../file_actions.py" line="67" />
+      <location filename="../../init_gui.py" line="158" />
+      <location filename="../../init_gui.py" line="160" />
       <source>Save G-code</source>
       <translation>G-code kaydet</translation>
     </message>
     <message>
-      <location filename="../../file_actions.py" line="67" />
-      <location filename="../../file_io.py" line="246" />
+      <location filename="../../file_actions.py" line="68" />
+      <location filename="../../file_io.py" line="286" />
       <source>Save G-code as</source>
       <translation>G-code farklı kaydet</translation>
     </message>
     <message>
-      <location filename="../../init_gui.py" line="160" />
+      <location filename="../../init_gui.py" line="179" />
       <source>Save the program, stock and tools as a FreeCAD project</source>
       <translation>Programı, stoku ve takımları FreeCAD projesi olarak kaydet</translation>
     </message>
@@ -1434,7 +1437,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Bölümler</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="614" />
+      <location filename="../../panel.py" line="621" />
       <source>Select a CAMed program in the active document.</source>
       <translation>Etkin belgede bir CAMed programı seçin.</translation>
     </message>
@@ -1444,8 +1447,8 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Açılacak programı seçin.</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="220" />
-      <location filename="../../file_io.py" line="215" />
+      <location filename="../../file_io.py" line="261" />
+      <location filename="../../file_io.py" line="256" />
       <source>Select a single CAMed program to export.</source>
       <translation>Dışa aktarmak için tek bir CAMed programı seçin.</translation>
     </message>
@@ -1513,7 +1516,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Simülasyon kalitesi</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="515" />
+      <location filename="../../panel.py" line="521" />
       <source>Simulation updated.</source>
       <translation>Simülasyon güncellendi.</translation>
     </message>
@@ -1521,6 +1524,11 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <location filename="../../simulation_gl.py" line="423" />
       <source>Simulation updated. Use the play button to start.</source>
       <translation>Simülasyon güncellendi. Başlatmak için oynat düğmesini kullanın.</translation>
+    </message>
+    <message>
+      <location filename="../../file_io.py" line="70" />
+      <source>Some characters cannot be saved in the original encoding. Use Save As to save a UTF-8 copy.</source>
+      <translation>Bazı karakterler dosyanın özgün kodlamasıyla kaydedilemiyor. UTF-8 kopyası oluşturmak için Farklı Kaydet’i kullanın.</translation>
     </message>
     <message>
       <location filename="../../gcode_geometry.py" line="32" />
@@ -1589,7 +1597,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Stok geometrisi hazır değil; önce yeniden hesaplayın.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="201" />
+      <location filename="../../panel.py" line="202" />
       <location filename="../../simulation_input.py" line="90" />
       <source>Stock is required for simulation.</source>
       <translation>Simülasyon için stok gerekli.</translation>
@@ -1625,7 +1633,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>İş milini durdur</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="217" />
+      <location filename="../../panel.py" line="218" />
       <source>Stopped</source>
       <translation>Durduruldu</translation>
     </message>
@@ -1757,7 +1765,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Takım ucu geometrisi hazır değil.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="308" />
+      <location filename="../../panel.py" line="314" />
       <source>Toolpath updated.</source>
       <translation>Takım yolu güncellendi.</translation>
     </message>
@@ -1834,7 +1842,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Eşleşmeyen yorum parantezi.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="211" />
+      <location filename="../../panel.py" line="212" />
       <source>Unsaved program</source>
       <translation>Kaydedilmemiş program</translation>
     </message>
@@ -1844,8 +1852,8 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Delme çevriminde desteklenmeyen parametre.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="78" />
-      <location filename="../../panel.py" line="209" />
+      <location filename="../../panel.py" line="79" />
+      <location filename="../../panel.py" line="210" />
       <source>Untitled.nc</source>
       <translation>Adsız.nc</translation>
     </message>
@@ -1865,12 +1873,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Güncelleniyor</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="258" />
+      <location filename="../../panel.py" line="263" />
       <source>Updating toolpath…</source>
       <translation>Takım yolu güncelleniyor…</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="215" />
+      <location filename="../../panel.py" line="216" />
       <source>Updating…</source>
       <translation>Güncelleniyor…</translation>
     </message>
@@ -1895,7 +1903,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Q yalnız G73/G83 ile kullanılmalı.</translation>
     </message>
     <message>
-      <location filename="../../file_io.py" line="46" />
+      <location filename="../../file_io.py" line="54" />
       <source>Use a .nc, .ngc, .tap or .gcode file extension.</source>
       <translation>G-code uzantısı .nc, .ngc, .tap veya .gcode olmalı.</translation>
     </message>
@@ -2042,7 +2050,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>{letter} negatif olmayan tam sayı olmalı.</translation>
     </message>
     <message>
-      <location filename="../../panel.py" line="305" />
+      <location filename="../../panel.py" line="311" />
       <source>{value1}
 Only motions before this error are shown.</source>
       <translation>{value1}

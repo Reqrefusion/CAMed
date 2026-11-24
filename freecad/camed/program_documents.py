@@ -7,9 +7,12 @@ import sys
 
 
 def bind_path(operation, filename):
+    path = str(Path(filename).resolve())
+    if getattr(operation, 'CAMEditorGCodePath', None) == path:
+        return
     if not hasattr(operation, 'CAMEditorGCodePath'):
         operation.addProperty('App::PropertyString', 'CAMEditorGCodePath', 'CAMed')
-    operation.CAMEditorGCodePath = str(Path(filename).resolve())
+    operation.CAMEditorGCodePath = path
 
 
 def initialize_program(operation, source, *, result=None, filename=None, label=None, document_label=None):

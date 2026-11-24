@@ -152,6 +152,25 @@ class NewProject(OpenEditor):
         panel.show_panel()
 
 
+class SaveGCode(OpenEditor):
+    def GetResources(self):
+        return {
+            "MenuText": tr('Save G-code'),
+            "Pixmap": ":/icons/document-save.svg",
+            "ToolTip": tr('Save G-code'),
+        }
+
+    def IsActive(self):
+        from .file_io import active_operation
+
+        return active_operation() is not None
+
+    def open(self):
+        from .file_io import save_active
+
+        save_active()
+
+
 class SaveProject(OpenEditor):
     def GetResources(self):
         return {
@@ -172,6 +191,7 @@ Gui.addCommand("CAMed_Stock", StockSettings())
 Gui.addCommand("CAMed_Tools", ToolSettings())
 Gui.addCommand("CAMed_Cycle", CannedCycle())
 Gui.addCommand("CAMed_New", NewProject())
+Gui.addCommand("CAMed_SaveGCode", SaveGCode())
 Gui.addCommand("CAMed_SaveProject", SaveProject())
 Gui.addCommand('CAMed_Preview', Preview())
 from .editor_actions import ACTION_SPECS
@@ -208,6 +228,7 @@ class CAMedWorkbench(Gui.Workbench):
                 "CAMed_Cycle",
                 'CAMed_Preview',
                 "Separator",
+                "CAMed_SaveGCode",
                 "CAMed_SaveProject",
             ],
         )

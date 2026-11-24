@@ -52,6 +52,7 @@ class FileActionRouter(QtCore.QObject):
         action_type = getattr(QtGui, "QAction", None) or QtWidgets.QAction
         route = self.should_route()
         containers = list(main.findChildren(QtWidgets.QMenu)) + list(main.findChildren(QtWidgets.QToolBar))
+        button_actions = {}
         for name, command in (("Std_Open", "open"), ("Std_Save", "save"), ("Std_SaveAs", "save_as")):
             original = main.findChild(action_type, name)
             if original is None:
@@ -76,12 +77,14 @@ class FileActionRouter(QtCore.QObject):
                     original.setShortcuts([])
                     replacement.setShortcuts(entry["shortcuts"])
                 replacement.setEnabled(True)
+                button_actions[original] = replacement
                 for container in containers:
                     if original in container.actions():
                         container.insertAction(original, replacement)
                         container.removeAction(original)
             else:
                 replacement.setShortcuts([])
+                button_actions[replacement] = original
                 for container in containers:
                     if replacement in container.actions():
                         container.insertAction(replacement, original)
@@ -89,6 +92,14 @@ class FileActionRouter(QtCore.QObject):
                 if entry["shortcuts"] is not None:
                     original.setShortcuts(entry["shortcuts"])
                     entry["shortcuts"] = None
+
+        # Some native toolbar buttons keep a default action independently of
+        # the toolbar's action list. Retarget these without dropping their menus.
+        for button in main.findChildren(QtWidgets.QToolButton):
+            previous = button.defaultAction()
+            if previous in button_actions:
+                button.setDefaultAction(button_actions[previous])
+                button.removeAction(previous)
 
 
 def activate(enabled):

@@ -49,6 +49,20 @@ class Container:
         self.items.remove(action)
 
 
+class ToolButton:
+    def __init__(self, action):
+        self.action = action
+
+    def defaultAction(self):
+        return self.action
+
+    def setDefaultAction(self, action):
+        self.action = action
+
+    def removeAction(self, action):
+        pass
+
+
 class FileActionTests(unittest.TestCase):
     def setUp(self):
         self.original = Action(text='Save')
@@ -62,13 +76,15 @@ class FileActionTests(unittest.TestCase):
             'Std_Save': self.original,
             'Std_SaveAs': self.save_as,
         }.get(name)
-        self.main.findChildren.side_effect = lambda cls: [self.container] if cls is Container else []
+        self.button = ToolButton(self.original)
+        widgets = {Container: [self.container], ToolButton: [self.button]}
+        self.main.findChildren.side_effect = lambda cls: widgets.get(cls, [])
         gui = types.ModuleType('FreeCADGui')
         gui.getMainWindow = Mock(return_value=self.main)
         qt = types.ModuleType('PySide')
         qt.QtCore = types.SimpleNamespace(QObject=object)
         qt.QtGui = types.SimpleNamespace(QAction=Action)
-        qt.QtWidgets = types.SimpleNamespace(QMenu=Container, QToolBar=type('Toolbar', (), {}))
+        qt.QtWidgets = types.SimpleNamespace(QMenu=Container, QToolBar=type('Toolbar', (), {}), QToolButton=ToolButton)
         io = types.ModuleType('freecad.camed.file_io')
         self.active = Mock(return_value=object())
         io.active_operation = self.active
@@ -88,12 +104,14 @@ class FileActionTests(unittest.TestCase):
         self.assertEqual(self.original.keys, [])
         self.assertEqual(save.keys, ['Ctrl+S'])
         self.assertNotIn(self.original, self.container.items)
+        self.assertIs(self.button.defaultAction(), save)
         self.router.enabled = False
         self.router.refresh()
         self.assertEqual(self.container.items, [self.other, self.original, self.save_as])
         self.assertEqual(self.original.keys, ['Ctrl+S'])
         self.assertEqual(self.save_as.keys, ['Ctrl+Shift+S'])
         self.assertEqual(save.keys, [])
+        self.assertIs(self.button.defaultAction(), self.original)
         self.original.triggered.connect.assert_not_called()
 
     def test_switching_to_non_cam_document_restores_native_save(self):

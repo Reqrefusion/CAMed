@@ -163,7 +163,8 @@ class GLTests(unittest.TestCase):
             Qt=types.SimpleNamespace(Checked=2, Unchecked=0),
         )
         self.qt.QtWidgets = types.SimpleNamespace(
-            QWidget=object, QToolButton=object, QSlider=object, QMdiArea=object
+            QWidget=object, QToolButton=object, QSlider=object, QMdiArea=object,
+            QApplication=types.SimpleNamespace(focusWidget=lambda: None),
         )
         self.path = types.ModuleType('Path')
         self.path.Command = lambda text, params: types.SimpleNamespace(text=text)
@@ -328,15 +329,23 @@ class GLTests(unittest.TestCase):
         self.assertEqual(self.session.block_ends[6] - self.session.block_ends[5], 17)
         self.assertNotIn('T5', self.engine.commands)
 
-    def test_empty_invalid_source_closes_gl_without_publishing_an_empty_snapshot(self):
+    def test_incomplete_source_pauses_existing_view_until_valid_motion_returns(self):
         self.reload()
         self.set_source('G1 X')
         self.reload(autoplay=True)
         self.assertEqual(len(self.engine.builds), 1)
-        self.assertTrue(self.session.closed)
-        self.assertIsNone(self.owner.simulation)
+        self.assertFalse(self.session.closed)
+        self.assertIs(self.owner.simulation, self.session)
         self.display.button.setEnabled.assert_called_with(False)
         self.display.step.setEnabled.assert_called_with(False)
+
+        self.set_source('G1 x100 y20 z-10')
+        self.reload()
+        self.assertEqual(len(self.engine.builds), 2)
+        self.assertEqual(len(self.session.block_ends), 1)
+        moves = [command for command in self.engine.commands if command.startswith('G1 ')]
+        self.assertEqual(moves, ['G1 X100 Y20 Z-10'])
+        self.display.button.setEnabled.assert_called_with(True)
 
     def test_reload_pauses_native_playback_and_resumes_after_initialization(self):
         self.reload()
@@ -516,7 +525,9 @@ class GLTests(unittest.TestCase):
 
     def test_background_rebuild_restores_selected_cad_view(self):
         cad = object()
-        area = types.SimpleNamespace(activeSubWindow=lambda: cad, setActiveSubWindow=Mock())
+        area = types.SimpleNamespace(active=cad, activeSubWindow=Mock(), setActiveSubWindow=Mock())
+        area.activeSubWindow.side_effect = lambda: area.active
+        area.setActiveSubWindow.side_effect = lambda view: setattr(area, 'active', view)
         self.gui.getMainWindow = lambda: types.SimpleNamespace(
             findChildren=lambda cls: [self.display], findChild=lambda cls: area
         )
@@ -526,14 +537,19 @@ class GLTests(unittest.TestCase):
             area.setActiveSubWindow('gl-view')
             begin(stock, quality)
 
+        focus = Mock()
+        self.qt.QtWidgets.QApplication.focusWidget = lambda: focus
         self.engine.BeginSimulation = activates_gl
         self.reload()
+        focus.setFocus.assert_called_once_with()
         self.assertEqual(
             area.setActiveSubWindow.call_args_list, [unittest.mock.call('gl-view'), unittest.mock.call(cad)]
         )
         area.setActiveSubWindow.reset_mock()
+        focus.setFocus.reset_mock()
         self.reload(preserve_view=False)
         area.setActiveSubWindow.assert_called_once_with('gl-view')
+        focus.setFocus.assert_not_called()
 
     def test_paths_start_visible_and_preserve_user_toggle_on_reload(self):
         changes = []
@@ -557,7 +573,7 @@ class GLTests(unittest.TestCase):
         self.tcs[1].Tool.Shape.isValid = lambda: False
         with self.assertRaises(ValueError):
             self.reload()
-        area.setActiveSubWindow.assert_called_once_with(cad)
+        area.setActiveSubWindow.assert_not_called()
 
     def test_seek_pauses_and_uses_motion_weights_without_rebuilding(self):
         self.set_source('G0 X0\nG1 X1\nG1 X10')

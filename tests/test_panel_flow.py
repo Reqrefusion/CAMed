@@ -95,7 +95,7 @@ class PanelFlowTests(unittest.TestCase):
         self.assertTrue(p.operation.Visibility)
         self.assertEqual(p.operation.Gcode, ["G1 X10 F100"])
         p.document.commitTransaction.assert_called_once()
-        p.simulation.reload.assert_called_once_with(autoplay=False)
+        p.simulation.reload.assert_called_once_with(autoplay=False, preserve_camera=True)
 
     def test_missing_initial_tool_keeps_path_and_reloads_material_simulation(self):
         from freecad.camed.validation import preview
@@ -110,7 +110,7 @@ class PanelFlowTests(unittest.TestCase):
         self.assertTrue(p.valid)
         self.assertTrue(p.operation.Visibility)
         self.assertEqual(p.operation.Gcode, ['G1 X10 F100'])
-        previous.reload.assert_called_once_with(autoplay=False)
+        previous.reload.assert_called_once_with(autoplay=False, preserve_camera=True)
         previous.cancel.assert_not_called()
         self.assertIs(p.simulation, previous)
         self.assertFalse(p.preview_failed)
@@ -125,9 +125,10 @@ class PanelFlowTests(unittest.TestCase):
         self.assertEqual(p.operation.Gcode, [])
         self.assertEqual(p.operation.LiveEditorSource, "G1 X")
         self.assertFalse(p.operation.Visibility)
-        old_simulation.cancel.assert_called_once()
+        old_simulation.cancel.assert_not_called()
         old_simulation.reload.assert_not_called()
-        self.assertIsNone(p.simulation)
+        old_simulation.set_enabled.assert_called_with(False)
+        self.assertIs(p.simulation, old_simulation)
 
     def test_partial_last_line_shows_new_prefix_and_allows_manual_simulation(self):
         p = self.panel
@@ -138,7 +139,7 @@ class PanelFlowTests(unittest.TestCase):
         self.assertTrue(p.operation.Visibility)
         self.assertEqual(p.operation.Gcode, ["G1 X25 F300"])
         self.assertEqual(p.operation.LiveEditorSource, "G1 X25 F300\nG0 Z")
-        p.simulation.reload.assert_called_once_with(autoplay=False)
+        p.simulation.reload.assert_called_once_with(autoplay=False, preserve_camera=True)
         self.assertIn('Line 2', p.status.setText.call_args[0][0])
 
     def test_paused_simulation_does_not_autoplay(self):
@@ -146,7 +147,7 @@ class PanelFlowTests(unittest.TestCase):
         p.simulation.is_playing.return_value = False
         p.text_changed()
         p.apply_text()
-        p.simulation.reload.assert_called_once_with(autoplay=False)
+        p.simulation.reload.assert_called_once_with(autoplay=False, preserve_camera=True)
         self.assertTrue(p.valid)
 
     def test_native_operation_failure_aborts_transaction(self):
@@ -200,7 +201,7 @@ class PanelFlowTests(unittest.TestCase):
         module.GLSession = Mock()
         with patch.dict(sys.modules, {"freecad.camed.simulation_gl": module}):
             p.sync_scene()
-        module.GLSession.return_value.open.assert_called_once_with(preserve_camera=True)
+        module.GLSession.return_value.open.assert_called_once_with(focus=False, preserve_camera=True)
 
     def scene(self):
         p = self.panel
