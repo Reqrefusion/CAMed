@@ -182,8 +182,21 @@ class SaveProject(OpenEditor):
     def IsActive(self):
         return App.ActiveDocument is not None
 
-    def Activated(self):
-        Gui.runCommand("Std_SaveAs")
+    def open(self):
+        from .editor_lifecycle import require_idle
+        from .program_backend import require_document_idle
+
+        document = App.ActiveDocument
+        if document is None:
+            return
+        require_idle()
+        require_document_idle(document)
+        owner = active_editor()
+        if owner is not None:
+            if owner.timer.isActive() or owner.pending_code:
+                owner.apply_text()
+            owner.flush_source()
+        Gui.getDocument(document.Name).saveAs()
 
 
 Gui.addCommand("CAMed_Open", OpenEditor())

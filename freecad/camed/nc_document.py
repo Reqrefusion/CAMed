@@ -21,6 +21,11 @@ class NCState:
         self.sync()
 
 
+    def mark_project_modified(self):
+        self.project_modified = True
+        self.sync()
+
+
 class NCObserver:
     def __init__(self):
         self.documents = {}

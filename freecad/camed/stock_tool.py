@@ -1,6 +1,7 @@
 """Stock setup as a standalone toolbar tool; reuse the existing stock form."""
 
 from .i18n import tr
+from . import nc_document
 import FreeCADGui as Gui
 from PySide import QtWidgets
 from .stock_panel import StockPanel
@@ -46,7 +47,8 @@ class StockDialog(QtWidgets.QDialog):
             self.document.openTransaction(tr('CAMed stock settings'))
             self.edit_started = True
         try:
-            return self.owner.apply_stock(definition, transaction=False)
+            with nc_document.internal_update(self.document):
+                return self.owner.apply_stock(definition, transaction=False)
         except Exception:
             self.rollback()
             raise
@@ -54,14 +56,15 @@ class StockDialog(QtWidgets.QDialog):
     def rollback(self):
         if not self.edit_started:
             return
-        try:
-            self.document.abortTransaction()
-        except ReferenceError:
-            # Closing the document disposes its transaction as well.
+        with nc_document.internal_update(self.document):
+            try:
+                self.document.abortTransaction()
+            except ReferenceError:
+                # Closing the document disposes its transaction as well.
+                self.edit_started = False
+                return
             self.edit_started = False
-            return
-        self.edit_started = False
-        self.document.recompute()
+            self.document.recompute()
         if self.owner.is_current():
             self.owner.sync_scene()
 
@@ -70,6 +73,9 @@ class StockDialog(QtWidgets.QDialog):
             if self.edit_started:
                 self.document.commitTransaction()
                 self.edit_started = False
+                state = nc_document.state_for(self.document)
+                if state is not None:
+                    state.mark_project_modified()
                 self.owner.sync_scene()
             super().accept()
 
