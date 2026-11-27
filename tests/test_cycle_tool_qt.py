@@ -87,6 +87,24 @@ class CycleToolQtTests(unittest.TestCase):
         self.owner.editor.undo()
         self.assertEqual(self.owner.editor.toPlainText(), source)
 
+    def test_optional_tool_change_is_previewed_and_inserted_before_drilling(self):
+        from freecad.camed.validation import preview
+
+        dialog = self.open_tool()
+        self.move_to(3)
+        self.assertNotIn(' M6', dialog.block)
+        dialog.tool_number.setValue(7)
+        dialog.refresh()
+        lines = dialog.block.splitlines()
+        change = lines.index('T7 M6')
+        self.assertTrue(lines[change - 1].startswith('G0 Z'))
+        self.assertLess(change, next(i for i, line in enumerate(lines) if line.startswith('G81')))
+        self.assertEqual(dialog.code.toPlainText(), dialog.block)
+        dialog.accept()
+        result = preview(self.owner.editor.toPlainText(), {7: 1})
+        self.assertIsNone(result.error)
+        self.assertEqual(result.states[-1].tool, 7)
+
     def test_source_edits_while_open_are_preserved_and_rechecked(self):
         dialog = self.open_tool()
         source = '(yeni açıklama)\nG21 G90\nG1 X30 F350\nM30'

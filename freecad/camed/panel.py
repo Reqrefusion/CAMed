@@ -14,6 +14,47 @@ from .program_backend import persist_source, parse_program, apply_preview
 _panel = None
 
 
+class ZoomableCodeEditor(CodeEditor):
+    def __init__(self, parent):
+        super().__init__(parent)
+        from .editor_tools import shortcut
+        from .syntax_highlighting import NCWordHighlighter
+
+        self.wheel_delta = 0
+        self.highLighter.setDocument(None)
+        self.highLighter = NCWordHighlighter(self.document(), self.palette())
+        self.zoom_shortcuts = (
+            shortcut(self, 'Ctrl++', lambda: self.zoom_text(1)),
+            shortcut(self, 'Ctrl+=', lambda: self.zoom_text(1)),
+            shortcut(self, 'Ctrl+-', lambda: self.zoom_text(-1)),
+        )
+
+    def changeEvent(self, event):
+        super().changeEvent(event)
+        if event.type() in (QtCore.QEvent.PaletteChange, QtCore.QEvent.StyleChange):
+            update_palette = getattr(getattr(self, 'highLighter', None), 'set_palette', None)
+            if update_palette is not None:
+                update_palette(self.palette())
+
+    def zoom_text(self, steps):
+        self.zoomIn(steps)
+        self.updateLineNumberAreaWidth(0)
+        self.lineNumberArea.resize(self.lineNumberAreaWidth(), self.lineNumberArea.height())
+        self.lineNumberArea.update()
+
+    def wheelEvent(self, event):
+        if event.modifiers() == QtCore.Qt.ControlModifier and event.angleDelta().y():
+            # A regular wheel notch is 120 units. Accumulate smaller wheel events.
+            self.wheel_delta += event.angleDelta().y()
+            steps = int(self.wheel_delta / 120)
+            self.wheel_delta -= steps * 120
+            if steps:
+                self.zoom_text(steps)
+            event.accept()
+            return
+        super().wheelEvent(event)
+
+
 class LivePanel(QtWidgets.QDockWidget):
     def __init__(self, operation):
         super().__init__("CAMed", Gui.getMainWindow())
@@ -85,7 +126,7 @@ class LivePanel(QtWidgets.QDockWidget):
         header.addWidget(title)
         header.addStretch()
         layout.addLayout(header)
-        self.editor = CodeEditor(body)
+        self.editor = ZoomableCodeEditor(body)
         self.editor.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
         self.editor.setTabStopDistance(self.editor.fontMetrics().horizontalAdvance(" ") * 4)
         self.editor.setFrameShape(QtWidgets.QFrame.StyledPanel)

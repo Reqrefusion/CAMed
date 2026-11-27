@@ -331,6 +331,10 @@ class ProgramState:
         if not values and not gcodes and not mcodes:
             yield "(line number)"
             return
+        # A coordinate-free Haas startup block may pair rapid mode with cycle cancel.
+        # Selecting G0 also clears any active cycle and its parameters.
+        if gcodes.count(0) == 1 and gcodes.count(80) == 1 and not set(values).intersection("XYZIJRPQ"):
+            gcodes.remove(80)
         validate_commands(gcodes, mcodes, number)
         self.apply_modes(values, gcodes, number)
         self.apply_machine(values, gcodes, mcodes, number)

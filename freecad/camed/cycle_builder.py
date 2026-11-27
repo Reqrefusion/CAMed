@@ -1,11 +1,14 @@
 """Build editor blocks with FreeCAD's original drilling toolpath generator."""
 
 from .i18n import tr
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import math
 from .drill_cycles import CYCLES, MAX_PECKS
 from .validation import preview
 from .gcode_syntax import format_number
+from .tool_backend import MAX_TOOL_NUMBER
+
+CYCLE_DECIMALS = 3
 
 
 @dataclass(frozen=True)
@@ -19,10 +22,15 @@ class CycleSpec:
     peck: float = 2.0
     dwell: float = 0.5
     return_mode: int = 98
+    tool_number: int | None = None
 
     def validate(self):
         if self.cycle not in CYCLES or self.return_mode not in (98, 99):
             raise ValueError(tr('Invalid drilling cycle or return mode.'))
+        if self.tool_number is not None and (
+            type(self.tool_number) is not int or not 0 <= self.tool_number <= MAX_TOOL_NUMBER
+        ):
+            raise ValueError(tr('Enter a valid CAM tool number.'))
         if not 1 <= len(self.holes) <= 1000:
             raise ValueError(tr('Enter between 1 and 1000 hole positions.'))
         if any(len(point) != 2 for point in self.holes):
@@ -71,6 +79,17 @@ def insertion_context(source, position):
 
 def build_block(spec, context=None):
     spec.validate()
+    spec = replace(
+        spec,
+        depth=round(spec.depth, CYCLE_DECIMALS),
+        retract=round(spec.retract, CYCLE_DECIMALS),
+        clearance=round(spec.clearance, CYCLE_DECIMALS),
+        feed=round(spec.feed, CYCLE_DECIMALS),
+        peck=round(spec.peck, CYCLE_DECIMALS),
+        dwell=round(spec.dwell, CYCLE_DECIMALS),
+        holes=tuple((round(x, CYCLE_DECIMALS), round(y, CYCLE_DECIMALS)) for x, y in spec.holes),
+    )
+    spec.validate()
     if context is not None and context.ended:
         raise ValueError(tr('Cannot insert a cycle after the program end.'))
     if context is not None and context.modal_motion in CYCLES:
@@ -78,16 +97,18 @@ def build_block(spec, context=None):
     try:
         import FreeCAD as App
         import Part
-        import Path
         from Path.Base.Generator import drill
     except ImportError as error:
         raise ValueError(tr('Could not load the FreeCAD drilling generator.')) from error
+    clearance = f'G0 Z{format_number(spec.clearance, decimals=CYCLE_DECIMALS)}'
     lines = [
         '(Drilling cycle)',
         'G21 G90 G17',
-        f'G0 Z{format_number(spec.clearance)}',
-        f'G{spec.return_mode}',
+        clearance,
     ]
+    if spec.tool_number is not None:
+        lines.append(f'T{spec.tool_number} M6')
+    lines.append(f'G{spec.return_mode}')
     for x, y in spec.holes:
         edge = Part.makeLine(App.Vector(x, y, spec.clearance), App.Vector(x, y, spec.depth))
         commands = drill.generate(
@@ -100,8 +121,9 @@ def build_block(spec, context=None):
         if len(commands) != 1 or commands[0].Name != f'G{spec.cycle}':
             raise ValueError(tr('FreeCAD could not generate the selected drilling cycle.'))
         params = dict(commands[0].Parameters, F=spec.feed)
-        lines.append(Path.Command(commands[0].Name, params).toGCode().strip())
-    lines.extend(['G80', f'G0 Z{format_number(spec.clearance)}'])
+        words = (f"{word}{format_number(value, decimals=CYCLE_DECIMALS)}" for word, value in params.items())
+        lines.append(" ".join((commands[0].Name, *words)))
+    lines.extend(['G80', clearance])
     # Preserve the program's units, distance mode, plane, return mode and feed.
     # Positions intentionally end at the last hole, at the explicit safe Z.
     if context is not None:

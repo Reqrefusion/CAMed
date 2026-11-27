@@ -51,11 +51,12 @@ def code_mask(line):
     return ''.join(result)
 
 
-def format_number(value):
+def format_number(value, *, decimals=12):
     # Native Command parsing must not receive an E word from scientific notation.
     if value == 0:
         return "0"
-    return f"{value:.12f}".rstrip("0").rstrip(".")
+    formatted = f"{value:.{decimals}f}".rstrip("0").rstrip(".")
+    return "0" if formatted == "-0" else formatted
 
 
 MODAL_GROUPS = {

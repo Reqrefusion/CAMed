@@ -1,6 +1,6 @@
 import unittest
 from dataclasses import replace
-from freecad.camed.cycle_builder import CycleSpec, insertion_context
+from freecad.camed.cycle_builder import CycleSpec, build_block, insertion_context
 
 
 class CycleBuilderTests(unittest.TestCase):
@@ -18,6 +18,9 @@ class CycleBuilderTests(unittest.TestCase):
             {'holes': ((float('inf'), 0),)},
             {'cycle': 84},
             {'return_mode': 0},
+            {'tool_number': -1},
+            {'tool_number': 2.5},
+            {'tool_number': 10001},
         ):
             with self.subTest(values=values), self.assertRaises(ValueError):
                 replace(CycleSpec(), **values).validate()
@@ -31,6 +34,15 @@ class CycleBuilderTests(unittest.TestCase):
             with self.subTest(values=values), self.assertRaises(ValueError):
                 replace(CycleSpec(), **values).validate()
         replace(CycleSpec(), cycle=81, peck=0, dwell=0).validate()
+
+    def test_values_that_become_invalid_at_output_precision_are_rejected(self):
+        for spec, message in (
+            (replace(CycleSpec(), depth=1.9999), "Hole bottom"),
+            (replace(CycleSpec(), feed=0.0001), "Feed rate"),
+            (replace(CycleSpec(), cycle=82, dwell=0.0001), "Dwell"),
+        ):
+            with self.subTest(spec=spec), self.assertRaisesRegex(ValueError, message):
+                build_block(spec)
 
     def test_prefix_modes_are_captured_for_restoring_following_program(self):
         text = 'G20 G91 G18 G99\nG1 X1 F10\nY1\nM30'

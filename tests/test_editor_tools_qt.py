@@ -32,6 +32,86 @@ class EditorToolsQtTests(unittest.TestCase):
         self.select('G0 Z5\nG1 X10 F100', 6, 6)
         self.assertEqual(panel.selected_source_line(), 2)
 
+    def test_control_wheel_and_keyboard_zoom_only_change_editor_text_size(self):
+        from PySide import QtCore, QtGui, QtWidgets
+
+        source = 'G0 Z5\nG1 X10 F100'
+        self.select(source, 0, 5)
+        editor = self.panel.editor
+        self.main.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.panel)
+        self.main.show()
+        self.main.activateWindow()
+        self.panel.show()
+        editor.setFocus()
+        self.app.processEvents()
+        self.QtTest.QTest.qWait(40)
+        editor.document().setModified(False)
+        original_size = editor.font().pointSize()
+
+        def wheel(delta, modifiers):
+            event = QtGui.QWheelEvent(
+                QtCore.QPointF(8, 8), QtCore.QPointF(editor.viewport().mapToGlobal(QtCore.QPoint(8, 8))),
+                QtCore.QPoint(), QtCore.QPoint(0, delta), QtCore.Qt.NoButton,
+                modifiers, QtCore.Qt.ScrollPhase.NoScrollPhase, False,
+            )
+            QtWidgets.QApplication.sendEvent(editor.viewport(), event)
+
+        wheel(120, QtCore.Qt.NoModifier)
+        self.assertEqual(editor.font().pointSize(), original_size)
+        wheel(60, QtCore.Qt.ControlModifier)
+        self.assertEqual(editor.font().pointSize(), original_size)
+        wheel(60, QtCore.Qt.ControlModifier)
+        self.assertEqual(editor.font().pointSize(), original_size + 1)
+        self.assertEqual(editor.lineNumberArea.width(), editor.lineNumberAreaWidth())
+        wheel(-120, QtCore.Qt.ControlModifier)
+        self.assertEqual(editor.font().pointSize(), original_size)
+        self.QtTest.QTest.keyClick(editor, QtCore.Qt.Key_Equal, QtCore.Qt.ControlModifier)
+        self.assertEqual(editor.font().pointSize(), original_size + 1)
+        self.QtTest.QTest.keyClick(editor, QtCore.Qt.Key_Minus, QtCore.Qt.ControlModifier)
+        self.assertEqual(editor.font().pointSize(), original_size)
+        self.assertEqual(editor.toPlainText(), source)
+        self.assertEqual(editor.textCursor().selectedText(), 'G0 Z5')
+        self.assertFalse(editor.document().isModified())
+        self.assertTrue(editor.hasFocus())
+
+    def test_nc_colors_follow_modal_motion_and_keep_contrast_in_both_themes(self):
+        from PySide import QtGui
+        from freecad.camed.syntax_highlighting import _luminance
+
+        editor = self.panel.editor
+        source = 'G0 X10 (G1 X7 🛠) Z2\ng1 X20 F100\nY15\nG2 X25 I2.5\nG3 X20 I-2.5\nT7 M6\nG80\nZ5'
+        editor.setPlainText(source)
+
+        def color_at(line, offset):
+            block = editor.document().findBlockByNumber(line)
+            return next(
+                span.format.foreground().color()
+                for span in block.layout().formats()
+                if span.start <= offset < span.start + span.length
+            )
+
+        for background in (QtGui.QColor('#202020'), QtGui.QColor('#fafafa')):
+            palette = QtGui.QPalette(editor.palette())
+            palette.setColor(QtGui.QPalette.Base, background)
+            editor.setPalette(palette)
+            colors = {name: fmt.foreground().color() for name, fmt in editor.highLighter.formats.items()}
+            self.assertEqual(color_at(0, 3), colors['rapid'])
+            self.assertEqual(color_at(0, 7), colors['comment'])
+            self.assertEqual(color_at(0, len('G0 X10 (G1 X7 🛠) '.encode('utf-16-le')) // 2), colors['rapid'])
+            self.assertEqual(color_at(1, 0), colors['linear'])
+            self.assertEqual(color_at(1, 7), colors['rate'])
+            self.assertEqual(color_at(2, 0), colors['linear'])
+            self.assertEqual(color_at(3, 3), colors['clockwise'])
+            self.assertEqual(color_at(4, 3), colors['counterclockwise'])
+            self.assertEqual(color_at(5, 0), colors['tool'])
+            self.assertEqual(color_at(5, 3), colors['tool'])
+            self.assertEqual(color_at(7, 0), colors['command'])
+            self.assertEqual(len({colors[name].name() for name in ('rapid', 'linear', 'clockwise', 'counterclockwise')}), 4)
+            for color in colors.values():
+                low, high = sorted((_luminance(background), _luminance(color)))
+                self.assertGreaterEqual((high + 0.05) / (low + 0.05), 4.5)
+            self.assertEqual(editor.toPlainText(), source)
+
     def test_program_check_command_shortcut_and_window_are_removed(self):
         from freecad.camed.editor_actions import ACTION_SPECS, ACTION_GROUPS
         from freecad.camed import program_inspection

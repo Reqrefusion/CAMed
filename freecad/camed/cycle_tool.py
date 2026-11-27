@@ -2,7 +2,8 @@
 
 from .i18n import tr
 from PySide import QtCore, QtGui, QtWidgets
-from .cycle_builder import CycleSpec, build_block, insertion_context
+from .cycle_builder import CYCLE_DECIMALS, CycleSpec, build_block, insertion_context
+from .tool_backend import MAX_TOOL_NUMBER
 
 
 class CycleDialog(QtWidgets.QDialog):
@@ -91,6 +92,13 @@ class CycleDialog(QtWidgets.QDialog):
         cutting = QtWidgets.QGroupBox(tr('Cutting parameters'), self)
         self.cutting_form = QtWidgets.QFormLayout(cutting)
         self.cutting_form.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
+        self.tool_number = QtWidgets.QSpinBox(self)
+        self.tool_number.setRange(-1, MAX_TOOL_NUMBER)
+        self.tool_number.setSpecialValueText(tr('Keep current tool'))
+        self.tool_number.setValue(-1)
+        self.tool_number.setKeyboardTracking(False)
+        self.tool_number.valueChanged.connect(self.schedule)
+        self.cutting_form.addRow(tr('Tool number (T):'), self.tool_number)
         self.cutting_form.addRow(tr('Feed rate (F)'), self.feed)
         self.peck_label = QtWidgets.QLabel(tr('Peck depth (Q)'), cutting)
         self.dwell_label = QtWidgets.QLabel(tr('Bottom dwell (P)'), cutting)
@@ -170,8 +178,8 @@ class CycleDialog(QtWidgets.QDialog):
 
     def field(self, value, suffix, positive=False):
         field = QtWidgets.QDoubleSpinBox(self)
-        field.setDecimals(4)
-        field.setRange(0.0001 if positive else -1000000, 1000000)
+        field.setDecimals(CYCLE_DECIMALS)
+        field.setRange(10 ** -CYCLE_DECIMALS if positive else -1000000, 1000000)
         field.setSuffix(suffix)
         field.setKeyboardTracking(False)
         field.setValue(value)
@@ -228,6 +236,8 @@ class CycleDialog(QtWidgets.QDialog):
             points.append((x.value(), y.value()))
         for field in fields:
             field.interpretText()
+        self.tool_number.interpretText()
+        number = self.tool_number.value()
         return CycleSpec(
             cycle=self.kind.currentData(),
             holes=tuple(points),
@@ -238,6 +248,7 @@ class CycleDialog(QtWidgets.QDialog):
             peck=self.peck.value(),
             dwell=self.dwell.value(),
             return_mode=self.return_mode.currentData(),
+            tool_number=number if number >= 0 else None,
         )
 
     def refresh(self):

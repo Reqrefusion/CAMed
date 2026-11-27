@@ -20,12 +20,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation> T{value1} ön seçili; aktif takım {tool}, M6 bekleniyor.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="73" />
+      <location filename="../../cycle_tool.py" line="74" />
       <source> mm/min</source>
       <translation> mm/dk</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="75" />
+      <location filename="../../cycle_tool.py" line="76" />
       <source> s</source>
       <translation> sn</translation>
     </message>
@@ -79,7 +79,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Programın bulunduğu belgeyi etkinleştirin. Program silinmiş olabilir.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="115" />
+      <location filename="../../cycle_tool.py" line="123" />
       <source>Add hole</source>
       <translation>Delik ekle</translation>
     </message>
@@ -154,7 +154,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Alt yüzey köşesi</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="96" />
+      <location filename="../../cycle_tool.py" line="104" />
       <source>Bottom dwell (P)</source>
       <translation>Dipte bekleme (P)</translation>
     </message>
@@ -186,12 +186,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
     </message>
     <message>
       <location filename="../../stock_backend.py" line="117" />
-      <location filename="../../stock_tool.py" line="46" />
+      <location filename="../../stock_tool.py" line="47" />
       <source>CAMed stock settings</source>
       <translation>CAMed stok ayarları</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="20" />
+      <location filename="../../cycle_tool.py" line="21" />
       <source>CAMed · Drilling cycle</source>
       <translation>CAMed · Delme çevrimi</translation>
     </message>
@@ -201,8 +201,8 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>CAMed · İşin takımları</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="154" />
-      <location filename="../../stock_tool.py" line="35" />
+      <location filename="../../cycle_tool.py" line="162" />
+      <location filename="../../stock_tool.py" line="36" />
       <source>Cancel</source>
       <translation>İptal</translation>
     </message>
@@ -227,7 +227,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Editör henüz kapatılamadı; bekleyen işlemi tamamlayın.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="75" />
+      <location filename="../../cycle_builder.py" line="81" />
       <source>Cannot insert a cycle after the program end.</source>
       <translation>Program sonundan sonra çevrim eklenemez.</translation>
     </message>
@@ -272,17 +272,17 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Bu iş için kullanılabilir bir takım numarası seçin:</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="44" />
+      <location filename="../../cycle_builder.py" line="50" />
       <source>Clearance Z must be at or above the retract plane R.</source>
       <translation>Güvenli yükseklik, yaklaşma düzleminin altında olamaz.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="79" />
+      <location filename="../../cycle_tool.py" line="80" />
       <source>Clearance height</source>
       <translation>Güvenli yükseklik</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="149" />
+      <location filename="../../cycle_tool.py" line="157" />
       <source>Click a line in the editor to change the insertion point.</source>
       <translation>Ekleme yerini değiştirmek için editörde istediğiniz satıra tıklayın.</translation>
     </message>
@@ -307,7 +307,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Önce takım düzenleme penceresini kapatın.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="128" />
+      <location filename="../../cycle_tool.py" line="136" />
       <source>Code preview</source>
       <translation>Kod önizlemesi</translation>
     </message>
@@ -352,7 +352,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Koordinatlar, takım bilgisi ve uyarılar</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="63" />
+      <location filename="../../cycle_builder.py" line="69" />
       <source>Correct the preceding lines: {value1}</source>
       <translation>Önceki satırlardaki hatayı düzeltin: {value1}</translation>
     </message>
@@ -392,7 +392,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Simülasyon oynatma denetimleri bulunamadı.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="84" />
+      <location filename="../../cycle_builder.py" line="90" />
       <source>Could not load the FreeCAD drilling generator.</source>
       <translation>FreeCAD delme üreticisi yüklenemedi.</translation>
     </message>
@@ -422,7 +422,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Takım silinemedi</translation>
     </message>
     <message>
-      <location filename="../../stock_tool.py" line="83" />
+      <location filename="../../stock_tool.py" line="89" />
       <source>Could not restore the previous stock: {error}</source>
       <translation>Eski stok geri yüklenemedi: {error}</translation>
     </message>
@@ -457,12 +457,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Kesici uzunluğu</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="91" />
+      <location filename="../../cycle_tool.py" line="92" />
       <source>Cutting parameters</source>
       <translation>Kesme ayarları</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="44" />
+      <location filename="../../cycle_tool.py" line="45" />
       <source>Cycle</source>
       <translation>Çevrim</translation>
     </message>
@@ -477,7 +477,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Silindir</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="59" />
+      <location filename="../../cycle_tool.py" line="60" />
       <source>Depths and motion</source>
       <translation>Derinlik ve hareket</translation>
     </message>
@@ -570,7 +570,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Bekleme P negatif olamaz.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="54" />
+      <location filename="../../cycle_builder.py" line="60" />
       <source>Dwell P must be greater than zero for G82.</source>
       <translation>G82 için bekleme P sıfırdan büyük olmalı.</translation>
     </message>
@@ -597,22 +597,23 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Takım ucu parametrelerini düzenle</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="77" />
+      <location filename="../../cycle_builder.py" line="83" />
       <source>End the current cycle with G80 first.</source>
       <translation>Mevcut çevrim önce G80 ile kapatılmalı.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="29" />
+      <location filename="../../cycle_builder.py" line="35" />
       <source>Enter X and Y for each hole.</source>
       <translation>Her delik için X ve Y gerekli.</translation>
     </message>
     <message>
+      <location filename="../../cycle_builder.py" line="31" />
       <location filename="../../simulation_input.py" line="58" />
       <source>Enter a valid CAM tool number.</source>
       <translation>Geçerli bir CAM takım numarası gerekli.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="27" />
+      <location filename="../../cycle_builder.py" line="33" />
       <source>Enter between 1 and 1000 hole positions.</source>
       <translation>1 ile 1000 arasında delik konumu girin.</translation>
     </message>
@@ -622,7 +623,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Sonlu sayılar gerekli.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="40" />
+      <location filename="../../cycle_builder.py" line="46" />
       <source>Enter finite numeric values.</source>
       <translation>Tüm değerler sonlu sayılar olmalı.</translation>
     </message>
@@ -648,12 +649,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Dakika başına ilerleme</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="94" />
+      <location filename="../../cycle_tool.py" line="102" />
       <source>Feed rate (F)</source>
       <translation>İlerleme (F)</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="46" />
+      <location filename="../../cycle_builder.py" line="52" />
       <source>Feed rate F must be greater than zero.</source>
       <translation>İlerleme F sıfırdan büyük olmalı.</translation>
     </message>
@@ -750,7 +751,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>FreeCAD delme çevrimini açamadı.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="101" />
+      <location filename="../../cycle_builder.py" line="109" />
       <source>FreeCAD could not generate the selected drilling cycle.</source>
       <translation>FreeCAD seçilen delme çevrimini oluşturamadı.</translation>
     </message>
@@ -775,7 +776,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>G-code editörü</translation>
     </message>
     <message>
-      <location filename="../../init_gui.py" line="205" />
+      <location filename="../../init_gui.py" line="218" />
       <source>G-code editor, stock setup and simulation</source>
       <translation>G-code editörü, stok tanımı ve canlı simülasyon</translation>
     </message>
@@ -815,7 +816,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>G43/H takım boyu bilgisi okunuyor; görünüm programlanan takım ucu koordinatlarındadır.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="49" />
+      <location filename="../../cycle_tool.py" line="50" />
       <source>G73 · Chip breaking</source>
       <translation>G73 · Talaş kırma</translation>
     </message>
@@ -825,17 +826,17 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>G73/G83 için pozitif ve ölçülebilir Q adımı gerekli.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="47" />
+      <location filename="../../cycle_tool.py" line="48" />
       <source>G81 · Drilling</source>
       <translation>G81 · Basit delme</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="50" />
+      <location filename="../../cycle_tool.py" line="51" />
       <source>G82 · Drilling with dwell</source>
       <translation>G82 · Beklemeli delme</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="48" />
+      <location filename="../../cycle_tool.py" line="49" />
       <source>G83 · Peck drilling</source>
       <translation>G83 · Gagalama</translation>
     </message>
@@ -845,12 +846,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>G90.1 mutlak XY yay merkezi için I ve J gerekli.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="83" />
+      <location filename="../../cycle_tool.py" line="84" />
       <source>G98 · Return to clearance Z</source>
       <translation>G98 · Güvenli Z’ye dön</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="84" />
+      <location filename="../../cycle_tool.py" line="85" />
       <source>G99 · Return to R plane</source>
       <translation>G99 · R düzlemine dön</translation>
     </message>
@@ -871,17 +872,17 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Yükseklik (Z)</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="81" />
+      <location filename="../../cycle_tool.py" line="82" />
       <source>Hole bottom (Z)</source>
       <translation>Delik tabanı (Z)</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="42" />
+      <location filename="../../cycle_builder.py" line="48" />
       <source>Hole bottom Z must be below the retract plane R.</source>
       <translation>Delik tabanı Z, yaklaşma düzlemi R'nin altında olmalıdır.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="105" />
+      <location filename="../../cycle_tool.py" line="113" />
       <source>Hole positions</source>
       <translation>Delik konumları</translation>
     </message>
@@ -932,12 +933,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>G81, G82, G83 veya G73 delme çevrimi ekle</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="248" />
+      <location filename="../../cycle_tool.py" line="259" />
       <source>Insert before line {value1}</source>
       <translation>{value1}. satırın önüne ekle</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="152" />
+      <location filename="../../cycle_tool.py" line="160" />
       <source>Insert code</source>
       <translation>Kodu ekle</translation>
     </message>
@@ -947,7 +948,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Delme çevrimi ekle</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="25" />
+      <location filename="../../cycle_builder.py" line="27" />
       <source>Invalid drilling cycle or return mode.</source>
       <translation>Geçersiz delme çevrimi veya geri dönüş modu.</translation>
     </message>
@@ -965,6 +966,11 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <location filename="../../init_gui.py" line="59" />
       <source>Job tools…</source>
       <translation>İşin takımları…</translation>
+    </message>
+    <message>
+      <location filename="../../cycle_tool.py" line="97" />
+      <source>Keep current tool</source>
+      <translation>Mevcut takımı kullan</translation>
     </message>
     <message>
       <location filename="../../info_state.py" line="41" />
@@ -1073,12 +1079,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Hareket koordinatları simülasyonun hesaplama sınırını aşıyor.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="68" />
+      <location filename="../../cycle_builder.py" line="74" />
       <source>Move the cursor after the current cycle's G80 line.</source>
       <translation>İmleci mevcut delme çevriminin G80 satırından sonrasına getirin.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="66" />
+      <location filename="../../cycle_builder.py" line="72" />
       <source>Move the cursor before M2/M30 or the closing % line.</source>
       <translation>İmleci M2/M30 veya programı kapatan % satırından önceye getirin.</translation>
     </message>
@@ -1118,7 +1124,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>{line}. satırdaki hareket için başlangıç takımı tanımlı değil.</translation>
     </message>
     <message>
-      <location filename="../../editor_tools.py" line="153" />
+      <location filename="../../editor_tools.py" line="174" />
       <source>No matches found.</source>
       <translation>Eşleşme bulunamadı.</translation>
     </message>
@@ -1164,7 +1170,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Seçimi veya programı N10, N20… olarak numaralandır</translation>
     </message>
     <message>
-      <location filename="../../stock_tool.py" line="31" />
+      <location filename="../../stock_tool.py" line="32" />
       <source>OK</source>
       <translation>Tamam</translation>
     </message>
@@ -1221,12 +1227,12 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>P parametresi yalnızca G4/G64 ile destekleniyor.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="95" />
+      <location filename="../../cycle_tool.py" line="103" />
       <source>Peck depth (Q)</source>
       <translation>Gagalama adımı (Q)</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="49" />
+      <location filename="../../cycle_builder.py" line="55" />
       <source>Peck depth Q must be greater than zero.</source>
       <translation>Gagalama adımı Q sıfırdan büyük olmalı.</translation>
     </message>
@@ -1329,7 +1335,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Satır numaralarını kaldır</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="118" />
+      <location filename="../../cycle_tool.py" line="126" />
       <source>Remove selected</source>
       <translation>Seçileni sil</translation>
     </message>
@@ -1359,37 +1365,37 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Tekrarlanan {letter} parametresi.</translation>
     </message>
     <message>
-      <location filename="../../editor_tools.py" line="57" />
+      <location filename="../../editor_tools.py" line="59" />
       <source>Replace</source>
       <translation>Değiştir</translation>
     </message>
     <message>
-      <location filename="../../editor_tools.py" line="60" />
+      <location filename="../../editor_tools.py" line="62" />
       <source>Replace all</source>
       <translation>Tümünü değiştir</translation>
     </message>
     <message>
-      <location filename="../../editor_tools.py" line="62" />
+      <location filename="../../editor_tools.py" line="64" />
       <source>Replace all matches</source>
       <translation>Tüm eşleşmeleri değiştir</translation>
     </message>
     <message>
-      <location filename="../../editor_tools.py" line="54" />
+      <location filename="../../editor_tools.py" line="56" />
       <source>Replace with…</source>
       <translation>Yeni metin…</translation>
     </message>
     <message>
-      <location filename="../../editor_tools.py" line="182" />
+      <location filename="../../editor_tools.py" line="203" />
       <source>Replaced {count} matches.</source>
       <translation>{count} eşleşme değiştirildi.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="80" />
+      <location filename="../../cycle_tool.py" line="81" />
       <source>Retract plane (R)</source>
       <translation>Yaklaşma düzlemi (R)</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="85" />
+      <location filename="../../cycle_tool.py" line="86" />
       <source>Return between holes</source>
       <translation>Delikler arası dönüş</translation>
     </message>
@@ -1496,7 +1502,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
     </message>
     <message>
       <location filename="../../init_gui.py" line="127" />
-      <location filename="../../simulation_gl.py" line="391" />
+      <location filename="../../simulation_gl.py" line="397" />
       <source>Simulation</source>
       <translation>Simülasyon görünümü</translation>
     </message>
@@ -1521,7 +1527,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Simülasyon güncellendi.</translation>
     </message>
     <message>
-      <location filename="../../simulation_gl.py" line="423" />
+      <location filename="../../simulation_gl.py" line="429" />
       <source>Simulation updated. Use the play button to start.</source>
       <translation>Simülasyon güncellendi. Başlatmak için oynat düğmesini kullanın.</translation>
     </message>
@@ -1567,7 +1573,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
     </message>
     <message>
       <location filename="../../simulation_input.py" line="91" />
-      <location filename="../../stock_tool.py" line="17" />
+      <location filename="../../stock_tool.py" line="18" />
       <source>Stock</source>
       <translation>Stok</translation>
     </message>
@@ -1684,7 +1690,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Satır başlangıcı negatif olmayan, adım pozitif bir tam sayı olmalı.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="162" />
+      <location filename="../../cycle_tool.py" line="170" />
       <source>The target program is no longer active.</source>
       <translation>Çevrimin ekleneceği program artık etkin değil.</translation>
     </message>
@@ -1720,7 +1726,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Bu takım başka bir iş veya CAM operasyonunda kullanılıyor.</translation>
     </message>
     <message>
-      <location filename="../../cycle_builder.py" line="52" />
+      <location filename="../../cycle_builder.py" line="58" />
       <source>Too many pecks. Increase Q or reduce the number of holes.</source>
       <translation>Gagalama sayısı çok yüksek; Q adımını büyütün veya delik sayısını azaltın.</translation>
     </message>
@@ -1735,6 +1741,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Takım boyu ofset numarası</translation>
     </message>
     <message>
+      <location filename="../../cycle_tool.py" line="101" />
       <location filename="../../tool_controller.py" line="27" />
       <source>Tool number (T):</source>
       <translation>Takım numarası (T):</translation>
@@ -1945,7 +1952,7 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>İş koordinat sistemi; makine ofseti önizlemeye uygulanmaz</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="107" />
+      <location filename="../../cycle_tool.py" line="115" />
       <source>X / Y · Relative to the work origin</source>
       <translation>X / Y · Program sıfırına göre</translation>
     </message>
@@ -1985,22 +1992,22 @@ T numarasını düzenlemek için çift tıklayın</translation>
       <translation>Z koordinatı</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="78" />
+      <location filename="../../cycle_tool.py" line="79" />
       <source>Z coordinate of the hole bottom, measured from the work origin.</source>
       <translation>Delik tabanının Z koordinatı; delik uzunluğu değildir.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="76" />
+      <location filename="../../cycle_tool.py" line="77" />
       <source>Z position used at the start and end of the cycle.</source>
       <translation>Çevrim başlangıcında ve sonunda çıkılacak Z konumu.</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="77" />
+      <location filename="../../cycle_tool.py" line="78" />
       <source>Z position where rapid approach ends and drilling feed begins (R).</source>
       <translation>Hızlı yaklaşmanın bittiği, delme ilerlemesinin başladığı Z konumu (R).</translation>
     </message>
     <message>
-      <location filename="../../cycle_tool.py" line="87" />
+      <location filename="../../cycle_tool.py" line="88" />
       <source>Z values are relative to the work origin.</source>
       <translation>Z değerleri program sıfırına göredir.</translation>
     </message>

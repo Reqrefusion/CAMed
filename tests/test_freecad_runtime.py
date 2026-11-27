@@ -95,6 +95,23 @@ class FreeCADRuntimeTests(unittest.TestCase):
                 self.assertEqual(result.states[-1].position, (25, 10, 5))
                 self.assertEqual(len(result.lines), len(result.states))
 
+    def test_native_drill_words_use_three_decimal_places(self):
+        from freecad.camed.cycle_builder import CycleSpec, build_block
+        from freecad.camed.gcode_syntax import parse_words
+        from freecad.camed.validation import preview
+
+        spec = CycleSpec(
+            cycle=82, holes=((12.12345, -8.98765),), depth=-5.34567,
+            retract=2.11111, clearance=5.43219, feed=120.12367, dwell=0.56789,
+        )
+        block = build_block(spec)
+        self.assertEqual(block.splitlines().count('G0 Z5.432'), 2)
+        line = next(line for line in block.splitlines() if line.startswith('G82 '))
+        self.assertNotRegex(line, r"\.\d{4,}")
+        values, _, _ = parse_words(line, 1)
+        self.assertEqual(values, {'X': 12.123, 'Y': -8.988, 'Z': -5.346, 'R': 2.111, 'F': 120.124, 'P': 0.568})
+        self.assertIsNone(preview(block).error)
+
     def test_native_path_command_selection_maps_expanded_cycles_and_tool_sections(self):
         import Path as NativePath
         from freecad.camed.tool_backend import section_records

@@ -9,6 +9,18 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(result.lines[-1], "G1 X25 F300")
         self.assertTrue(result.has_motion)
 
+    def test_haas_startup_block_cancels_cycle_and_keeps_rapid_mode(self):
+        for startup in ('G00 G90 G40 G21 G17 G80 G54', 'G80 G90 G00'):
+            with self.subTest(startup=startup):
+                source = f'%\nO1001\nT1 M06\n{startup}\nG00 X0 Y0 S3000 M03\nG43 H01 Z25 M08'
+                result = preview(source, {1: 1})
+                self.assertIsNone(result.error)
+                self.assertEqual(result.lines[-1], 'G0 Z25')
+                self.assertEqual(result.states[-1].position, (0, 0, 25))
+        for line in ('G00 G80 X10', 'G00 G80 G01', 'G00 G80 G80'):
+            with self.subTest(line=line):
+                self.assertRaises(CodeError, prepare, line)
+
     def test_invalid_middle_line_does_not_execute_later_lines(self):
         result = preview("G1 X5\nG41\nG1 X10")
         self.assertEqual(result.lines, ["G1 X5"])
